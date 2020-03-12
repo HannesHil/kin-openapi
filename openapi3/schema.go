@@ -490,42 +490,38 @@ func (schema *Schema) validate(c context.Context, stack []*Schema) (err error) {
 		}
 	}
 
-	schemaType := schema.Type
-	switch schemaType {
+	switch schema.Type {
 	case "":
 	case "boolean":
 	case "number":
-		if format := schema.Format; len(format) > 0 {
-			switch format {
-			case "float", "double":
-			default:
-				return unsupportedFormat(format)
-			}
+		switch schema.Format {
+		case "":
+		case "float", "double":
+		default:
+			return unsupportedFormat(schema.Format)
 		}
 	case "integer":
-		if format := schema.Format; len(format) > 0 {
-			switch format {
-			case "int32", "int64":
-			default:
-				return unsupportedFormat(format)
-			}
+		switch schema.Format {
+		case "":
+		case "int32", "int64":
+		default:
+			return unsupportedFormat(schema.Format)
 		}
 	case "string":
-		if format := schema.Format; len(format) > 0 {
-			switch format {
-			// Supported by OpenAPIv3.0.1:
-			case "byte", "binary", "date", "date-time", "password":
-				// In JSON Draft-07 (not validated yet though):
-			case "regex":
-			case "time", "email", "idn-email":
-			case "hostname", "idn-hostname", "ipv4", "ipv6":
-			case "uri", "uri-reference", "iri", "iri-reference", "uri-template":
-			case "json-pointer", "relative-json-pointer":
-			default:
-				// Try to check for custom defined formats
-				if _, ok := SchemaStringFormats[format]; !ok {
-					return unsupportedFormat(format)
-				}
+		switch schema.Format {
+		case "":
+		// Supported by OpenAPIv3.0.1:
+		case "byte", "binary", "date", "date-time", "password":
+			// In JSON Draft-07 (not validated yet though):
+		case "regex":
+		case "time", "email", "idn-email":
+		case "hostname", "idn-hostname", "ipv4", "ipv6":
+		case "uri", "uri-reference", "iri", "iri-reference", "uri-template":
+		case "json-pointer", "relative-json-pointer":
+		default:
+			// Try to check for custom defined formats
+			if _, ok := SchemaStringFormats[schema.Format]; !ok {
+				return unsupportedFormat(schema.Format)
 			}
 		}
 	case "array":
@@ -534,7 +530,7 @@ func (schema *Schema) validate(c context.Context, stack []*Schema) (err error) {
 		}
 	case "object":
 	default:
-		return fmt.Errorf("Unsupported 'type' value '%s'", schemaType)
+		return fmt.Errorf("Unsupported 'type' value '%s'", schema.Type)
 	}
 
 	if ref := schema.Items; ref != nil {
