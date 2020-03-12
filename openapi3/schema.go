@@ -907,7 +907,7 @@ func (schema *Schema) visitJSONString(value string, fast bool) (err error) {
 	cp := schema.compiledPattern
 	if cp == nil {
 		pattern := schema.Pattern
-		if v := schema.Pattern; len(v) > 0 {
+		if v := schema.Pattern; v != "" {
 			// Pattern
 			re, err := regexp.Compile(v)
 			if err != nil {
@@ -918,7 +918,7 @@ func (schema *Schema) visitJSONString(value string, fast bool) (err error) {
 				ErrReason: "JSON string doesn't match the regular expression '" + v + "'",
 			}
 			schema.compiledPattern = cp
-		} else if v := schema.Format; len(v) > 0 {
+		} else if v := schema.Format; v != "" {
 			// No pattern, but does have a format
 			re := SchemaStringFormats[v]
 			if re != nil {
